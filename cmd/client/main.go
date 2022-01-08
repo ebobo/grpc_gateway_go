@@ -45,7 +45,7 @@ func main() {
 	newUsers["Stig"] = 50
 
 	for name, age := range newUsers {
-		r, err := c.CreateUser(ctx, &userpb.NewUser{Name: name, Age: age})
+		r, err := c.CreateUser(ctx, &userpb.NewUser{Name: name, Age: age, Type: userpb.UserType_VISITOR})
 		if err != nil {
 			log.Fatalf("could not create user %v", err)
 		}

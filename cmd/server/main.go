@@ -48,7 +48,7 @@ func (server *UserServer) CreateUser(ctx context.Context, in *userpb.NewUser) (*
 	log.Printf("Handle CreateUser %v", in.GetName())
 	var userID = int32(rand.Intn(1000))
 
-	createdUser := &userpb.User{Id: userID, Name: in.GetName(), Age: in.GetAge()}
+	createdUser := &userpb.User{Id: userID, Name: in.GetName(), Age: in.GetAge(), Type: in.GetType()}
 	server.userList.Users = append(server.userList.Users, createdUser)
 
 	return createdUser, nil
