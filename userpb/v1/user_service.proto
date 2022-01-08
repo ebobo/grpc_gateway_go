@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package userpb.v1;
+
+option go_package = "pkg/userpb";
+
+import "userpb/v1/user.proto";
+
+service UserService{
+    //grpc server provide 2 services (rpc call)
+    rpc CreateUser (NewUser) returns (User) {}
+    rpc GetUser (GetUsersParams) returns (UserList) {} 
+}
