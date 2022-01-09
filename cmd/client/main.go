@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/ebobo/grpc_gateway_go/pkg/go/userpb/v1"
+	"github.com/ebobo/grpc_gateway_go/pkg/go/pb/v1"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -21,7 +21,7 @@ func main() {
 		log.Fatalf("did not connect %v", err)
 	}
 	defer conn.Close()
-	c := userpb.NewUserServiceClient(conn)
+	c := pb.NewUserServiceClient(conn)
 
 	// https://go.dev/blog/context
 	// In Go servers, each incoming request is handled in its own goroutine.
@@ -45,14 +45,14 @@ func main() {
 	newUsers["Stig"] = 50
 
 	for name, age := range newUsers {
-		r, err := c.CreateUser(ctx, &userpb.NewUser{Name: name, Age: age, Type: userpb.UserType_VISITOR})
+		r, err := c.CreateUser(ctx, &pb.NewUser{Name: name, Age: age, Type: pb.UserType_VISITOR})
 		if err != nil {
 			log.Fatalf("could not create user %v", err)
 		}
 		log.Printf(`User Details: Name: %s Age: %d Id: %d`, r.GetName(), r.GetAge(), r.GetId())
 	}
 
-	params := &userpb.GetUsersParams{}
+	params := &pb.GetUsersParams{}
 	r, err := c.GetUser(ctx, params)
 	if err != nil {
 		log.Fatalf("could not get user list %v", err)

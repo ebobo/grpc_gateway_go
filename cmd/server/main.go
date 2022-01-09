@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"net"
 
-	"github.com/ebobo/grpc_gateway_go/pkg/go/userpb/v1"
+	"github.com/ebobo/grpc_gateway_go/pkg/go/pb/v1"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -18,13 +18,13 @@ const (
 
 // UserServer that implements the pb API
 type UserServer struct {
-	userList *userpb.UserList
-	userpb.UnimplementedUserServiceServer
+	userList *pb.UserList
+	pb.UnimplementedUserServiceServer
 }
 
 // NewUserServer creates a new Service instance
 func NewUserServer() *UserServer {
-	return &UserServer{userList: &userpb.UserList{}}
+	return &UserServer{userList: &pb.UserList{}}
 }
 
 // Run grpc server
@@ -37,25 +37,30 @@ func (server *UserServer) Run() error {
 	gs := grpc.NewServer()
 	reflection.Register(gs)
 
-	userpb.RegisterUserServiceServer(gs, server)
+	pb.RegisterUserServiceServer(gs, server)
 
 	log.Printf("server listening at %v", lis.Addr())
 	return gs.Serve(lis)
 }
 
 // CreateUser implementation
-func (server *UserServer) CreateUser(ctx context.Context, in *userpb.NewUser) (*userpb.User, error) {
+func (server *UserServer) CreateUser(ctx context.Context, in *pb.NewUser) (*pb.User, error) {
 	log.Printf("Handle CreateUser %v", in.GetName())
 	var userID = int32(rand.Intn(1000))
 
-	createdUser := &userpb.User{Id: userID, Name: in.GetName(), Age: in.GetAge(), Type: in.GetType()}
+	createdUser := &pb.User{Id: userID, Name: in.GetName(), Age: in.GetAge(), Type: in.GetType()}
 	server.userList.Users = append(server.userList.Users, createdUser)
 
 	return createdUser, nil
 }
 
+//Connection implementation
+func (server *UserServer) Connection(stream pb.UserService_ConnectionServer) error {
+
+}
+
 // GetUser implementation
-func (server *UserServer) GetUser(ctx context.Context, in *userpb.GetUsersParams) (*userpb.UserList, error) {
+func (server *UserServer) GetUser(ctx context.Context, in *pb.GetUsersParams) (*pb.UserList, error) {
 	return server.userList, nil
 }
 
