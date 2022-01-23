@@ -2,13 +2,24 @@ syntax = "proto3";
 
 package pb.v1;
 
-option go_package = "pkg/pb";
-
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
 import "pb/v1/user.proto";
+
+option go_package = "pkg/pb";
 
 
 service UserService{
     //grpc server provide 2 services (rpc call)
     rpc CreateUser (NewUser) returns (User) {}
-    rpc GetUser (GetUsersParams) returns (UserList) {} 
+    rpc GetUser (GetUsersParams) returns (User) {
+        option (google.api.http) = {
+            get: "/api/v1/user/{id}"
+        };
+    } 
+    rpc ListUsers(google.protobuf.Empty) returns (UserList) {
+        option (google.api.http) = {
+            get: "/api/v1/users"
+        };
+    } 
 }

@@ -25,7 +25,7 @@ message User {
 }
 
 message GetUsersParams {
-
+    uint64 id = 1;
 }
 
 message UserList {

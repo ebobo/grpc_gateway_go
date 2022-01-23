@@ -5,10 +5,11 @@ import (
 	"log"
 	"time"
 
-	"github.com/ebobo/grpc_gateway_go/pkg/go/pb/v1"
+	"github.com/ebobo/grpc_gateway_go/pkg/api/go/pb/v1"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 const (
@@ -52,8 +53,8 @@ func main() {
 		log.Printf(`User Details: Name: %s Age: %d Id: %d`, r.GetName(), r.GetAge(), r.GetId())
 	}
 
-	params := &pb.GetUsersParams{}
-	r, err := c.GetUser(ctx, params)
+	// params := &pb.GetUsersParams{}
+	r, err := c.ListUsers(ctx, &emptypb.Empty{})
 	if err != nil {
 		log.Fatalf("could not get user list %v", err)
 	}

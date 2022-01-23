@@ -3,12 +3,16 @@ package main
 import (
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 
+	"github.com/ebobo/grpc_gateway_go/pkg/server"
 	"github.com/jessevdk/go-flags"
 )
 
 var opt struct {
-	GRPCAddr string `long:"grpc-addr" default:":9092" description:"gRPC listen address"`
+	GRPCAddr string `short:"g" long:"grpc-addr" default:":9092" description:"gRPC listen address"`
+	HTTPAddr string `short:"h" long:"http-addr" default:":9090" description:"http listen address" required:"yes"`
 }
 
 func main() {
@@ -17,9 +21,22 @@ func main() {
 		log.Fatalf("error parsing flags: %v", err)
 	}
 
-	var userManagementServer = NewUserServer()
+	server := server.New(server.Config{
+		GRPCListenAddr: opt.GRPCAddr,
+		HTTPListenAddr: opt.HTTPAddr,
+	})
 
-	if err := userManagementServer.Run(opt.GRPCAddr); err != nil {
-		log.Fatalf("failed to serve %v", err)
+	e := server.Start()
+	if e != nil {
+		log.Fatalf("error starting server: %v", e)
 	}
+
+	// Block forever
+	// Capture Ctrl-C
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
+	<-c
+
+	server.Shutdown()
+
 }
